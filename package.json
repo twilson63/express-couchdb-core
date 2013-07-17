@@ -1,0 +1,29 @@
+{
+  "name": "express-couchdb-core",
+  "version": "0.0.0",
+  "description": "A core rest api for a couchdb database",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": "",
+  "keywords": [
+    "Express",
+    "CouchDb",
+    "REST",
+    "API"
+  ],
+  "author": "Tom",
+  "license": "MIT",
+  "readmeFilename": "readme.md",
+  "devDependencies": {
+    "mocha": "~1.12.0",
+    "request": "~2.22.0",
+    "expect.js": "~0.2.0"
+  },
+  "dependencies": {
+    "express": "~3.3.4",
+    "nano": "~4.0.0",
+    "underscore": "~1.5.1"
+  }
+}

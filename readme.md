@@ -51,7 +51,7 @@ GET /api/person
 
 will return all documents of type "person"
 
-### GET /api/:model ? (couch options)
+### GET /api/:model 
 
 Returns a list of documents of the type `:model`
 

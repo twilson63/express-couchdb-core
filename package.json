@@ -1,6 +1,6 @@
 {
   "name": "express-couchdb-core",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A core rest api for a couchdb database",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,9 @@
   "devDependencies": {
     "mocha": "~1.12.0",
     "request": "~2.22.0",
-    "expect.js": "~0.2.0"
+    "expect.js": "~0.2.0",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-bump": "0.0.11"
   },
   "dependencies": {
     "express": "~3.3.4",

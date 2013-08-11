@@ -7,26 +7,22 @@ var all = function(doc) {
   emit(doc.type, doc);
 };
 
-var get = function(doc) {
+var get = function (doc) {
    if (/_/.test(doc.type)) {
      var parentDoc = doc.type.split('_')[0]; 
      emit([
           parentDoc, 
           doc[parentDoc + '_id']
       ], doc);
-  } else {
-    emit([
-      doc.type,
-      doc._id
-    ], doc);
   }
+  emit([doc.type, doc._id], doc);
 };
 
 module.exports = init = function(couch) {
   var db = nano(couch);
   db.insert({
     type: 'javascript',
-    version: "0.0.1",
+    version: "0.0.2",
     views: {
       all: {
         map: all.toString()

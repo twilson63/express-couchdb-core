@@ -3,8 +3,19 @@ var app = express();
 var nano = require('nano');
 var _ = require('underscore');
 
+var agentkeepalive = require('agentkeepalive');
+var myagent = new agentkeepalive({
+    maxSockets: 50
+  , maxKeepAliveRequests: 0
+  , maxKeepAliveTime: 30000
+  });
+
 module.exports = function(config) {
-  var db = nano(config.couch);
+  
+  var db = nano({ 
+    url: config.couch,
+    request_defaults: { agent: myagent} 
+  });
 
   // create document with model type
   app.post('/api/:model', function(req, res) {

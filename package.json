@@ -1,6 +1,6 @@
 {
   "name": "express-couchdb-core",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A core rest api for a couchdb database",
   "main": "index.js",
   "scripts": {

@@ -4,7 +4,7 @@
   "description": "A core rest api for a couchdb database",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --reporter spec"
   },
   "repository": "",
   "keywords": [

@@ -1,26 +1,31 @@
 var express = require('express');
-var app = express();
 var nano = require('nano');
 var _ = require('underscore');
 
-var agentkeepalive = require('agentkeepalive');
-var myagent = new agentkeepalive({
-    maxSockets: 50
-  , maxKeepAliveRequests: 0
-  , maxKeepAliveTime: 30000
-  });
-
 module.exports = function(config) {
-  
-  var db = nano({ 
-    url: config.couch,
-    request_defaults: { agent: myagent} 
-  });
+  var app = express();
+
+  var server, db;
+
+  if (config.couch) {
+    db = nano(config.couch);
+  } else {
+    server = nano(config.url);
+    db = config.database_parameter_name || 'COUCH_DB';
+  }
+
+  function getDb(req) {
+    if (typeof db === 'object') {
+      return db;
+    } else {
+      return server.use(req[db]);
+    }
+  }
 
   // create document with model type
   app.post('/api/:model', function(req, res) {
     req.body.type = req.params.model;
-    db.insert(req.body, function(err, body) {
+    getDb(req).insert(req.body, function(err, body) {
       if (err) { res.send(500, err); }
       res.send(body);
     });
@@ -28,7 +33,7 @@ module.exports = function(config) {
 
   // list document by model type
   app.get('/api/:model', function(req, res) { 
-    db.view('model', 'all', { 
+    getDb(req).view('model', 'all', { 
       key: req.params.model
       }, function(err, body) {
         if (err) { res.send(500, err); }
@@ -39,7 +44,7 @@ module.exports = function(config) {
   // get single document by id
   app.get('/api/:model/:id', function(req, res) {
     // get parent and children docs
-    db.view('model', 'get', {
+    getDb(req).view('model', 'get', {
       key: [req.params.model, req.params.id],
       include_docs: true
       }, 
@@ -57,7 +62,7 @@ module.exports = function(config) {
 
   // update single document by id
   app.put('/api/:model/:id', function(req, res) {
-    db.insert(req.body, req.params.id, function(err, body) {
+    getDb(req).insert(req.body, req.params.id, function(err, body) {
       if (err) { res.send(500, err); }
       res.send(body);
     });
@@ -65,7 +70,7 @@ module.exports = function(config) {
 
   // delete single document by id
   app.del('/api/:model/:id', function(req, res) {
-    db.destroy(req.params.id, req.body._rev, function(err, body) {
+    getDb(req).destroy(req.params.id, req.body._rev, function(err, body) {
       if (err) { res.send(500, err); }
       res.send(body);
     });

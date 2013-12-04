@@ -29,6 +29,17 @@ app.config(function() {
 });
 ```
 
+### Optional configuration
+
+If you would like to dynamically change which database is being used, then use 
+the following configuration and set the request parameter given to the name of 
+the database to use. The `database_parameter_name` is optional and will default 
+to `"COUCH_DB"`. 
+
+``` js
+var config = { url: 'http://localhost:5984', database_parameter_name: 'COUCH_DB'}
+```
+
 ## API
 
 The api uses the term model to represent the document type, and it is

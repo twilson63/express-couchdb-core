@@ -26,7 +26,7 @@ module.exports = function(config) {
   app.post('/api/:model', function(req, res) {
     req.body.type = req.params.model;
     getDb(req).insert(req.body, function(err, body) {
-      if (err) { res.send(500, err); }
+      if (err) { return res.send(500, err); }
       res.send(body);
     });
   });
@@ -36,7 +36,7 @@ module.exports = function(config) {
     getDb(req).view('model', 'all', { 
       key: req.params.model
       }, function(err, body) {
-        if (err) { res.send(500, err); }
+        if (err) { return res.send(500, err); }
         res.send(_(body.rows).pluck('value'));
     });
   });
@@ -63,7 +63,7 @@ module.exports = function(config) {
   // update single document by id
   app.put('/api/:model/:id', function(req, res) {
     getDb(req).insert(req.body, req.params.id, function(err, body) {
-      if (err) { res.send(500, err); }
+      if (err) { return res.send(500, err); }
       res.send(body);
     });
   });
@@ -71,7 +71,7 @@ module.exports = function(config) {
   // delete single document by id
   app.del('/api/:model/:id', function(req, res) {
     getDb(req).destroy(req.params.id, req.body._rev, function(err, body) {
-      if (err) { res.send(500, err); }
+      if (err) { return res.send(500, err); }
       res.send(body);
     });
   });

@@ -18,7 +18,7 @@ var get = function (doc) {
   emit([doc.type, doc._id], doc);
 };
 
-module.exports = init = function(couch) {
+module.exports = init = function(couch, cb) {
   var db = nano(couch);
   db.insert({
     type: 'javascript',
@@ -35,7 +35,10 @@ module.exports = init = function(couch) {
       if(!module.parent) {
         console.log(body);
       }
-    })
+      if (cb) {
+        cb(err);
+      }
+    });
 }
 
 if (!module.parent) {

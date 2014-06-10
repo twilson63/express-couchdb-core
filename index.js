@@ -7,8 +7,18 @@ module.exports = function(config) {
 
   var server, db;
 
-  if (config.couch) {
+  if (config.couch && !config.couch_username ) {
     db = nano(config.couch);
+  } else if (config.couch_username && config.couch_password) {
+    db = nano({
+      url: config.users,
+      request_defaults: {
+        auth: {
+          username: config.couch_username,
+          password: config.couch_password
+        }
+      }
+    });
   } else {
     server = nano(config.url);
     db = config.database_parameter_name || 'COUCH_DB';
@@ -32,8 +42,8 @@ module.exports = function(config) {
   });
 
   // list document by model type
-  app.get('/api/:model', function(req, res) { 
-    getDb(req).view('model', 'all', { 
+  app.get('/api/:model', function(req, res) {
+    getDb(req).view('model', 'all', {
       key: req.params.model
       }, function(err, body) {
         if (err) { return res.send(500, err); }
@@ -47,7 +57,7 @@ module.exports = function(config) {
     getDb(req).view('model', 'get', {
       key: [req.params.model, req.params.id],
       include_docs: true
-      }, 
+      },
       function(err, body) {
         if (err) { res.send(500, err); }
         var doc = _.chain(body.rows)
@@ -78,4 +88,3 @@ module.exports = function(config) {
 
   return app;
 };
-

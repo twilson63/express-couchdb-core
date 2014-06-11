@@ -7,17 +7,12 @@ module.exports = function(config) {
 
   var server, db;
 
-  if (config.couch && !config.couch_username ) {
+  if (config.couch && !config.request_defaults ) {
     db = nano(config.couch);
-  } else if (config.couch_username && config.couch_password) {
+  } else if (config.request_defaults) {
     db = nano({
-      url: config.users,
-      request_defaults: {
-        auth: {
-          username: config.couch_username,
-          password: config.couch_password
-        }
-      }
+      url: config.url,
+      request_defaults: config.request_defaults
     });
   } else {
     server = nano(config.url);

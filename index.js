@@ -10,10 +10,11 @@ module.exports = function(config) {
   if (config.couch && !config.request_defaults ) {
     db = nano(config.couch);
   } else if (config.request_defaults) {
-    db = nano({
+    server = nano({
       url: config.url,
       request_defaults: config.request_defaults
     });
+    db = config.database_parameter_name || 'COUCH_DB';
   } else {
     server = nano(config.url);
     db = config.database_parameter_name || 'COUCH_DB';

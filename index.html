@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=640" />
+
+    <link rel="stylesheet" href="stylesheets/core.css" media="screen"/>
+    <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-device-width:640px)"/>
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+
+    <script type="text/javascript" src="javascripts/modernizr.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#main_content').headsmart()
+      })
+    </script>
+    <title>Express-couchdb-core by twilson63</title>
+  </head>
+
+  <body>
+    <a id="forkme_banner" href="https://github.com/twilson63/express-couchdb-core">View on GitHub</a>
+    <div class="shell">
+
+      <header>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <h1>Express-couchdb-core</h1>
+            <h2>Core RESTful API interface to CouchDb Documents</h2>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+      </header>
+
+      <section id="downloads">
+        <span class="inner">
+          <a href="https://github.com/twilson63/express-couchdb-core/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/twilson63/express-couchdb-core/tarball/master" class="tgz"><em>download</em> .TGZ</a>
+        </span>
+      </section>
+
+
+      <span class="banner-fix"></span>
+
+
+      <section id="main_content">
+        <h1>
+<a name="express-couchdb-core" class="anchor" href="#express-couchdb-core"><span class="octicon octicon-link"></span></a>Express CouchDb Core</h1>
+
+<p>This module provides a generic restful api for accessing couchdb
+documents.  By dropping this module in your express application you can
+immediately start managing couchdb documents via a restful crud
+interface in your single page application.  This module only includes
+list, create, read, update and delete, it does not include any view or
+query functionality, this has to be implemented in your express
+application.</p>
+
+<h2>
+<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h2>
+
+<div class="highlight highlight-sh"><pre>npm install express-couchdb-core --save
+// add model design and all view to couchDb
+node init.js <span class="o">[</span>couchdb<span class="o">]</span>
+</pre></div>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">core</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'express-couchdb-core'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">couch</span><span class="o">:</span> <span class="s1">'http://localhost:5984/foo'</span> <span class="p">};</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">config</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// handle other requests first</span>
+  <span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">router</span><span class="p">);</span>
+  <span class="c1">// handle core requests</span>
+  <span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">core</span><span class="p">(</span><span class="nx">config</span><span class="p">));</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>
+<a name="optional-configuration" class="anchor" href="#optional-configuration"><span class="octicon octicon-link"></span></a>Optional configuration</h3>
+
+<p>If you would like to dynamically change which database is being used, then use 
+the following configuration and set the request parameter given to the name of 
+the database to use. The <code>database_parameter_name</code> is optional and will default 
+to <code>"COUCH_DB"</code>. </p>
+
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">url</span><span class="o">:</span> <span class="s1">'http://localhost:5984'</span><span class="p">,</span> <span class="nx">database_parameter_name</span><span class="o">:</span> <span class="s1">'COUCH_DB'</span><span class="p">}</span>
+</pre></div>
+
+<h2>
+<a name="api" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>API</h2>
+
+<p>The api uses the term model to represent the document type, and it is
+assumed that when you store your documents you will use the type node in
+the document to represent the model type.  For example, </p>
+
+<div class="highlight highlight-json"><pre><span class="p">{</span>
+  <span class="nt">"_id"</span><span class="p">:</span> <span class="s2">"123456789"</span><span class="p">,</span>
+  <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"Johnny Paper"</span><span class="p">,</span>
+  <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"person"</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>RESTFul call</p>
+
+<pre><code>GET /api/person
+</code></pre>
+
+<p>will return all documents of type "person"</p>
+
+<h3>
+<a name="get-apimodel" class="anchor" href="#get-apimodel"><span class="octicon octicon-link"></span></a>GET /api/:model</h3>
+
+<p>Returns a list of documents of the type <code>:model</code></p>
+
+<h3>
+<a name="post-apimodel" class="anchor" href="#post-apimodel"><span class="octicon octicon-link"></span></a>POST /api/:model</h3>
+
+<p>Create a document of type <code>:model</code></p>
+
+<h3>
+<a name="get-apimodelid" class="anchor" href="#get-apimodelid"><span class="octicon octicon-link"></span></a>GET /api/:model/:id</h3>
+
+<p>Returns a couch document</p>
+
+<h3>
+<a name="put-apimodelid" class="anchor" href="#put-apimodelid"><span class="octicon octicon-link"></span></a>PUT /api/:model/:id</h3>
+
+<p>Updates an existing couch document or creates a couch document with
+specific id</p>
+
+<h3>
+<a name="del-apimodelid" class="anchor" href="#del-apimodelid"><span class="octicon octicon-link"></span></a>DEL /api/:model/:id</h3>
+
+<p>Deletes a couch document</p>
+
+<h2>
+<a name="adding-child-docs" class="anchor" href="#adding-child-docs"><span class="octicon octicon-link"></span></a>Adding Child docs</h2>
+
+<p>This module comes with a feature to add child docs that can
+also be pulled down with a get request from the parent as
+an array in the parent node.</p>
+
+<p>For Example:</p>
+
+<p>POST /api/foo</p>
+
+<div class="highlight highlight-json"><pre><span class="p">{</span>
+  <span class="nt">"_id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nt">"_rev"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">,</span>
+  <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"foo"</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Next we post a child document to foo and we use the underscore
+to indicate it is a child document type and use the [model]_id
+to assign ownership to the parent document.</p>
+
+<p>POST /api/foo_bar</p>
+
+<div class="highlight highlight-json"><pre><span class="p">{</span>
+  <span class="nt">"_id"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nt">"_rev"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"baz"</span><span class="p">,</span>
+  <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"foo_bar"</span><span class="p">,</span>
+  <span class="nt">"foo_id"</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>This will link the document type foo_bar as a child to document
+type foo.  And when you get the foo document of id 1, it will return
+the foo document with a key called foo_bar: [] and the child document 
+in that array.</p>
+
+<p>GET /api/foo/1</p>
+
+<div class="highlight highlight-json"><pre><span class="p">{</span>
+  <span class="nt">"_id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nt">"_rev"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">,</span>
+  <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"foo"</span><span class="p">,</span>
+  <span class="nt">"foo_bar"</span><span class="p">:</span> <span class="p">[{</span>
+    <span class="nt">"_id"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nt">"_rev"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"baz"</span><span class="p">,</span>
+    <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"foo_bar"</span><span class="p">,</span>
+    <span class="nt">"foo_id"</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>you can have multiple children docs attached to a parent
+doc.</p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>MIT</p>
+
+<h2>
+<a name="contributions" class="anchor" href="#contributions"><span class="octicon octicon-link"></span></a>Contributions</h2>
+
+<p>Pull Requests Welcome</p>
+      </section>
+
+      <footer>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <p>this project by <a href="https://github.com/twilson63">twilson63</a> can be found on <a href="https://github.com/twilson63/express-couchdb-core">GitHub</a></p>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+        <p>Generated with <a href="http://pages.github.com">GitHub Pages</a> using Merlot</p>
+        <span class="octocat"></span>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>

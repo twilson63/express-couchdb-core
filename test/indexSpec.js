@@ -79,6 +79,34 @@ describe('Core Api', function() {
 
   });
   
+  describe('without database credentials', function() {
+    var db_request_parameter = 'COUCH_DB';
+    var app = express();
+    var server;
+
+    before(function(done) {
+      app.use(express.bodyParser());
+      app.use(function(req, res, next) {
+        req[db_request_parameter] = undefined;
+        next();
+      });
+      app.use(core({
+        url: 'http://localhost:5984/',
+        database_parameter_name: db_request_parameter
+      }));
+      server = app.listen(3000);
+
+      done();
+    });
+
+    after(function(done) {
+      server.close();
+      done();
+    });
+
+    noDbCredsTests();
+  });
+
   function tests(db_name) {
     // # Couch Core API
     describe('POST /api/:model', function() {
@@ -189,6 +217,54 @@ describe('Core Api', function() {
             done();
           });
         }
+      });
+    });
+  }
+
+  function noDbCredsTests() {
+    // # Couch Core API
+    describe('POST /api/:model', function() {
+      it('should return a 401', function(done) {
+        request.post('http://localhost:3000/api/foo', {json: { name: 'bar'}}, function(e,r,b) {
+          expect(r.statusCode).to.be(401);
+          done();
+        });
+      });
+    });
+
+    describe('GET /api/:model', function() {
+      it('should return a 401', function(done) {
+        request.get('http://localhost:3000/api/foo', {json: true}, function(e,r,b) {
+          expect(r.statusCode).to.be(401);
+          done();
+        });
+      });
+    });
+
+    describe('GET /api/:model/:id', function() {
+      it('should return a 401', function(done) {
+        request.get('http://localhost:3000/api/foo/1', {json: true}, function(e,r,b) {
+          expect(r.statusCode).to.be(401);
+          done();
+        });
+      });
+    });
+
+    describe('PUT /api/:model/:id', function() {
+      it('should return a 401', function(done) {
+        request.put('http://localhost:3000/api/foo/1', {json: true}, function(e,r,b) {
+          expect(r.statusCode).to.be(401);
+          done();
+        });
+      });
+    });
+
+    describe('DELETE /api/:model/:id', function() {
+      it('should return a 401', function(done) {
+        request.del('http://localhost:3000/api/foo/1', {json: true}, function(e,r,b) {
+          expect(r.statusCode).to.be(401);
+          done();
+        });
       });
     });
   }

@@ -2,6 +2,16 @@ var express = require('express');
 var nano = require('nano');
 var _ = require('underscore');
 
+function handleError(res, err) {
+  if (err.error === 'unauthorized') {
+    return res.send(401, {error: _.pick(err, 'name', 'message')});
+  } else if (err.error === 'not_found' || err.err === 'no_db_file') {
+    return res.send(404, {error: _.pick(err, 'name', 'message')});
+  } else {
+    return res.send(500, {error: _.pick(err, 'name', 'message')});
+  }
+}
+
 module.exports = function(config) {
   var app = express();
 
@@ -23,26 +33,32 @@ module.exports = function(config) {
   function getDb(req) {
     if (typeof db === 'object') {
       return db;
-    } else {
+    } else if (req[db]) {
       return server.use(req[db]);
+    } else {
+      return null;
     }
   }
 
   // create document with model type
   app.post('/api/:model', function(req, res) {
     req.body.type = req.params.model;
-    getDb(req).insert(req.body, function(err, body) {
-      if (err) { return res.send(500, err); }
+    var db = getDb(req)
+    if (!db) return res.send(401, {error: {name: 'Unauthorized'}})
+    db.insert(req.body, function(err, body) {
+      if (err) { return handleError(res, err); }
       res.send(body);
     });
   });
 
   // list document by model type
   app.get('/api/:model', function(req, res) {
-    getDb(req).view('model', 'all', {
+    var db = getDb(req)
+    if (!db) return res.send(401, {error: {name: 'Unauthorized'}})
+    db.view('model', 'all', {
       key: req.params.model
       }, function(err, body) {
-        if (err) { return res.send(500, err); }
+        if (err) { return handleError(res, err); }
         res.send(_(body.rows).pluck('value'));
     });
   });
@@ -50,12 +66,14 @@ module.exports = function(config) {
   // get single document by id
   app.get('/api/:model/:id', function(req, res) {
     // get parent and children docs
-    getDb(req).view('model', 'get', {
+    var db = getDb(req)
+    if (!db) return res.send(401, {error: {name: 'Unauthorized'}})
+    db.view('model', 'get', {
       key: [req.params.model, req.params.id],
       include_docs: true
       },
       function(err, body) {
-        if (err) { res.send(500, err); }
+        if (err) { return handleError(res, err); }
         var doc = _.chain(body.rows)
           .pluck('doc')
           .groupBy('type')
@@ -68,16 +86,20 @@ module.exports = function(config) {
 
   // update single document by id
   app.put('/api/:model/:id', function(req, res) {
-    getDb(req).insert(req.body, req.params.id, function(err, body) {
-      if (err) { return res.send(500, err); }
+    var db = getDb(req)
+    if (!db) return res.send(401, {error: {name: 'Unauthorized'}})
+    db.insert(req.body, req.params.id, function(err, body) {
+      if (err) { return handleError(res, err); }
       res.send(body);
     });
   });
 
   // delete single document by id
   app.del('/api/:model/:id', function(req, res) {
-    getDb(req).destroy(req.params.id, req.body._rev, function(err, body) {
-      if (err) { return res.send(500, err); }
+    var db = getDb(req)
+    if (!db) return res.send(401, {error: {name: 'Unauthorized'}})
+    db.destroy(req.params.id, req.body._rev, function(err, body) {
+      if (err) { return handleError(res, err); }
       res.send(body);
     });
   });
